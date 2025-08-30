@@ -27,7 +27,9 @@ if __name__ == "__main__":
     from version import __version__
     from exceptions import CaptchaRequired
     from utils import lock_file, resource_path, set_root_icon
-    from constants import LOGGING_LEVELS, SELF_PATH, FILE_FORMATTER, LOG_PATH, LOCK_PATH
+    from constants import (
+        LOGGING_LEVELS, SELF_PATH, FILE_FORMATTER, LOG_PATH, LOCK_PATH, set_profile
+    )
 
     if TYPE_CHECKING:
         from _typeshed import SupportsWrite
@@ -62,6 +64,7 @@ if __name__ == "__main__":
         log: bool
         tray: bool
         dump: bool
+        profile: str
 
         # TODO: replace int with union of literal values once typeshed updates
         @property
@@ -106,6 +109,12 @@ if __name__ == "__main__":
     parser.add_argument("--tray", action="store_true")
     parser.add_argument("--log", action="store_true")
     parser.add_argument("--dump", action="store_true")
+    parser.add_argument(
+        "--profile",
+        action="store",
+        default="default",
+        help="Allows to run multiple instances of the application, with separate settings.",
+    )
     # undocumented debug args
     parser.add_argument(
         "--debug-ws", dest="_debug_ws", action="store_true", help=argparse.SUPPRESS
@@ -114,6 +123,8 @@ if __name__ == "__main__":
         "--debug-gql", dest="_debug_gql", action="store_true", help=argparse.SUPPRESS
     )
     args = parser.parse_args(namespace=ParsedArgs())
+    # set profile
+    set_profile(args.profile)
     # load settings
     try:
         settings = Settings(args)
