@@ -256,6 +256,13 @@ def json_save(path: Path, contents: Mapping[Any, Any], *, sort: bool = False) ->
 
 def webopen(url: URL | str):
     url_str = str(url)
+    try:
+        browser = webbrowser.get('msedge')
+        browser.open_new_tab(url_str)
+        return
+    except webbrowser.Error:
+        pass  # fallback to default
+
     if IS_PACKAGED and sys.platform == "linux":
         # https://pyinstaller.org/en/stable/
         # runtime-information.html#ld-library-path-libpath-considerations
