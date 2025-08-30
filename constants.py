@@ -100,13 +100,24 @@ SCRIPTS_PATH = Path(VENV_PATH, SYS_SCRIPTS)
 # NOTE: These don't have to be available to the end-user, so the path points to the internal dir
 LANG_PATH = _resource_path("lang")
 # Other Paths
-LOG_PATH = Path(WORKING_DIR, "log.txt")
-DUMP_PATH = Path(WORKING_DIR, "dump.dat")
-LOCK_PATH = Path(WORKING_DIR, "lock.file")
-CACHE_PATH = Path(WORKING_DIR, "cache")
-CACHE_DB = Path(CACHE_PATH, "mapping.json")
-COOKIES_PATH = Path(WORKING_DIR, "cookies.jar")
-SETTINGS_PATH = Path(WORKING_DIR, "settings.json")
+def set_profile(profile_name: str):
+    global LOG_PATH, DUMP_PATH, LOCK_PATH, CACHE_PATH, CACHE_DB, COOKIES_PATH, SETTINGS_PATH
+    if profile_name == "default":
+        base_dir = WORKING_DIR
+    else:
+        base_dir = Path(WORKING_DIR, "profiles", profile_name)
+    base_dir.mkdir(parents=True, exist_ok=True)
+    LOG_PATH = Path(base_dir, "log.txt")
+    DUMP_PATH = Path(base_dir, "dump.dat")
+    LOCK_PATH = Path(base_dir, "lock.file")
+    CACHE_PATH = Path(base_dir, "cache")
+    CACHE_PATH.mkdir(parents=True, exist_ok=True)
+    CACHE_DB = Path(CACHE_PATH, "mapping.json")
+    COOKIES_PATH = Path(base_dir, "cookies.jar")
+    SETTINGS_PATH = Path(base_dir, "settings.json")
+
+# set default profile
+set_profile("default")
 # Typing
 JsonType = Dict[str, Any]
 URLType = NewType("URLType", str)

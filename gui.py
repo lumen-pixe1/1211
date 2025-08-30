@@ -421,11 +421,13 @@ class SelectCombobox(ttk.Combobox):
 
 
 class StatusBar:
-    def __init__(self, manager: GUIManager, master: ttk.Widget):
+    def __init__(self, manager: GUIManager, master: ttk.Widget, profile_name: str):
         frame = ttk.LabelFrame(master, text=_("gui", "status", "name"), padding=(4, 0, 4, 4))
         frame.grid(column=0, row=0, columnspan=3, sticky="nsew", padx=2)
+        frame.columnconfigure(0, weight=1)
         self._label = ttk.Label(frame)
-        self._label.grid(column=0, row=0, sticky="nsew")
+        self._label.grid(column=0, row=0, sticky="w")
+        ttk.Label(frame, text=f"Profile: {profile_name}").grid(column=1, row=0, sticky="e")
 
     def update(self, text: str):
         self._label.config(text=text)
@@ -2009,8 +2011,9 @@ class HelpTab:
 
 
 class GUIManager:
-    def __init__(self, twitch: Twitch):
+    def __init__(self, twitch: Twitch, profile_name: str):
         self._twitch: Twitch = twitch
+        self._profile_name: str = profile_name
         self._poll_task: asyncio.Task[NoReturn] | None = None
         self._close_requested = asyncio.Event()
         self._root = root = Tk(className=WINDOW_TITLE)
@@ -2081,7 +2084,7 @@ class GUIManager:
         # Main tab
         main_frame = ttk.Frame(root_frame, padding=8)
         self.tabs.add_tab(main_frame, name=_("gui", "tabs", "main"))
-        self.status = StatusBar(self, main_frame)
+        self.status = StatusBar(self, main_frame, self._profile_name)
         self.websockets = WebsocketStatus(self, main_frame)
         self.login = LoginForm(self, main_frame)
         self.progress = CampaignProgress(self, main_frame)
